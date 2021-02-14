@@ -22,4 +22,3 @@ const seekerSchema = new Schema({
 const Seeker = User.discriminator('Seeker', seekerSchema);
 
 module.exports = Seeker;
-
