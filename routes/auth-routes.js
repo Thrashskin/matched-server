@@ -3,12 +3,16 @@ const authRoutes = express.Router();
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
 
-const Seeker = require('../models/Seeker');
-const Company = require('../models/Company');
+var {User} = require('../models/User');
+var Seeker = require('../models/Seeker');
+var Company = require('../models/Company');
+
+
+//SIGNUP
+
+//WARNING: we haven't defined the GET route for signup YET.
 
 authRoutes.post('/signup', (req, res, next) => {
-
-  console.log(req)
   
   const {email, password, kind} = req.body; //bodyparser allowed in app.js
 
@@ -39,7 +43,8 @@ authRoutes.post('/signup', (req, res, next) => {
     }
 
     if(foundUser) {
-      res.status(400).json({ message: "This email address is already registered" }).
+      res.status(400).json({ message: "This email address is already registered" });
+      console.log('duplicated email')
       //TO DO: REDIRECT TO LOGIN
       return;
     }
@@ -54,7 +59,7 @@ authRoutes.post('/signup', (req, res, next) => {
     //   password: hashedPassword
     // });
 
-    const newUser = {}
+    var newUser = {}
 
     if (kind === 'Company') {
       newUser = new Company({
@@ -75,22 +80,58 @@ authRoutes.post('/signup', (req, res, next) => {
         return; 
       }
 
-      // req.login(newUser, error => {
+      req.login(newUser, error => {
 
-      //   if (error) {
-      //     res.status(500).json({message: 'Error while login after signup'})
-      //     return;
-      //   }
+        if (error) {
+          res.status(500).json({message: 'Error while login after signup'})
+          return;
+        }
 
-      //   res.status(200).json(newUser);
+        res.status(200).json(newUser);
 
-      //   });
+        });
 
     })
 
   }); //findOne
 
 }) //authRoutes
+
+//LOGIN
+// authRoutes.get('/login', (req, res, next) => {
+//   console.log('login route')
+// })
+
+authRoutes.post('/login', (req, res, next) => {
+
+  console.log(req.body)
+
+  passport.authenticate('local', (err, theUser, failureDetails) => {
+
+    if (err) {
+      return next(err);
+    }
+ 
+    if (!theUser) {
+      // Unauthorized, `failureDetails` contains the error messages from our logic in "LocalStrategy" {message: '…'}.
+      console.log(failureDetails)
+      res.status(400).json( { errorMessage: 'Wrong password or email' } );
+      return;
+    }
+ 
+    // save user in session: req.user
+    req.login(theUser, err => {
+      if (err) {
+        return next(err);
+      }
+      res.status(200).json(theUser);
+    });
+  })(req, res, next);
+});
+
+
+
+
 
 module.exports = authRoutes;
 
