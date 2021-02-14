@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const options = { discriminatorKey: 'kind' }
+const options = { 
+  discriminatorKey: 'kind',
 
-// kind: {
+ }
+
+//  kind: {
 //   type: String,
 //   required: true,
 //   enum: ['Seeker', 'Company']
@@ -23,8 +26,7 @@ const userSchema = new Schema({
   country: String,
   image: String,
   offers: [ { type: Schema.Types.ObjectId, ref: 'Offer' } ],
-  options
-})
+}, options);
 
 const User = mongoose.model('User', userSchema);
 

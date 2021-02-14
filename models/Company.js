@@ -5,9 +5,8 @@ const {User, options} = require('./User');
 
 const companySchema = new Schema({
   foundationYear: String,
-  description: String,
-  options
-})
+  description: String, 
+}, options)
 
 const Company = User.discriminator('Company', companySchema);
 
