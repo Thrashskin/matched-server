@@ -66,4 +66,10 @@ const authRoutes = require('./routes/auth-routes');
 //const { MongoStore } = require('connect-mongo');
 app.use('/api', authRoutes);
 
+const companyRoutes = require('./routes/company-routes');
+app.use('/api', companyRoutes);
+
+const seekerRoutes = require('./routes/seeker-routes');
+app.use('/api', seekerRoutes);
+
 module.exports = app;

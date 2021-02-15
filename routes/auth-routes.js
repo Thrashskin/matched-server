@@ -17,7 +17,7 @@ authRoutes.post('/signup', (req, res, next) => {
   const {email, password, kind} = req.body; //bodyparser allowed in app.js
 
   if (!email || !password) {
-    res.status(400).json({ message: 'BOTH email and password are MANDATORY' });
+    res.status(400).json({ message: 'Please, provide all the required fields.' });
     return;
   }
 
@@ -35,8 +35,6 @@ authRoutes.post('/signup', (req, res, next) => {
 
   User.findOne( {email}, (error, foundUser) => {
 
-    //let User = '' //it's uppercase because it will store a model.
-
     if(error) {
       res.status(500).json( {message: "Something went wrong"} );
       return;
@@ -49,15 +47,30 @@ authRoutes.post('/signup', (req, res, next) => {
       return;
     }
 
-    const salt = bcrypt.genSaltSync(10);
+  }); //findOne-email
+
+  // if (kind === 'Company') {
+
+  //   User.findOne( {name}, (error, foundCompany) => {
+
+  //     if(error) {
+  //       res.status(500).json( {message: "Something went wrong"} );
+  //       return;
+  //     }
+  
+  //     if(foundCompany) {
+  //       res.status(400).json({ message: "This company is already registered in our database" });
+  //       console.log('duplicated email')
+  //       //TO DO: REDIRECT TO LOGIN
+  //       return;
+  //     }
+  
+  //   }); //findOne
+  // }
+
+
+  const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
-
-    // User = kind === 'Company' ? Company : Seeker;
-
-    // const newUser = new User({
-    //   email: email,
-    //   password: hashedPassword
-    // });
 
     var newUser = {}
 
@@ -93,8 +106,6 @@ authRoutes.post('/signup', (req, res, next) => {
 
     })
 
-  }); //findOne
-
 }) //authRoutes
 
 //LOGIN
@@ -129,8 +140,10 @@ authRoutes.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
-
-
+authRoutes.get('/logout', (req, res) => {
+  req.logout();
+  res.status(200).json({ message: 'Logged out' })
+})
 
 
 module.exports = authRoutes;
