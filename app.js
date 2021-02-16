@@ -72,4 +72,7 @@ app.use('/api', companyRoutes);
 const seekerRoutes = require('./routes/seeker-routes');
 app.use('/api', seekerRoutes);
 
+const offerRoutes = require('./routes/offer-routes');
+app.use('/api', offerRoutes);
+
 module.exports = app;

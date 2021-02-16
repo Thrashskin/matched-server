@@ -14,7 +14,16 @@ const offerSchema = new Schema({
   salary: {
     from: { type: Number, required: true },
     to: { type: Number, required: true }
-  }
+  },
+  currency: {
+    type: String,
+    enum: ['Dollar', 'Euro'],
+    default: 'Euro'
+  },
+  requiredExperience: {type: Number, default: 0},
+  publisher: {type: Schema.Types.ObjectId, ref: 'Company', required: true}
 })
 
 const Offer = mongoose.model('Offer', offerSchema);
+
+module.exports = Offer;
