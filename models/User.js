@@ -25,7 +25,11 @@ const userSchema = new Schema({
   city: String,
   country: String,
   image: String,
-  offers: [ { type: Schema.Types.ObjectId, ref: 'Offer' } ],
+  offers: [{ 
+    type: Schema.Types.ObjectId, 
+    ref: 'Offer',
+    unique: true,
+   }],
 }, options);
 
 const User = mongoose.model('User', userSchema);

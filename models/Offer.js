@@ -22,7 +22,12 @@ const offerSchema = new Schema({
   },
   requiredExperience: {type: Number, default: 0},
   publisher: {type: Schema.Types.ObjectId, ref: 'Company', required: true},
-  candidates: [{type: Schema.Types.ObjectId, ref: 'Seeker', required: true}]
+  candidates: [{
+    type: Schema.Types.ObjectId, 
+    ref: 'Seeker', 
+    required: true,
+    unique: true
+  }]
 })
 
 const Offer = mongoose.model('Offer', offerSchema);

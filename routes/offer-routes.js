@@ -92,28 +92,25 @@ offerRoutes.put('/offer/:offerID/apply', (req, res, next) => {
 
   User.findById(applicant)
   .then(userFromDB => {
-    if(userFromDB.kind !== 'Seeker') {
-      res.status(400).json({message: 'Only seekers can apply to offers'});
+    if (userFromDB.offers.includes(offerID)) {
+      res.status(400).json({message: 'User is already in the list of candidates for this offer'});
       return;
     }
+      //Push the offerID into the appliedOffers array of the Seeker
+    User.findByIdAndUpdate(applicant, {
+      $push: {offers: offerID}
+    })
+    .then(response => {
+      Offer.findByIdAndUpdate(offerID, {
+        $push: {candidates: applicant}
+      })
+      .then(() => console.log('Succesfully applied to offer'))
+      .catch(error => res.json(error))
+      res.status(200).json(response)
+    })
+    .catch(theError => res.json(theError))
   })
   .catch(error => res.json(error));
-
-  //Push the offerID into the appliedOffers array of the Seeker
-
-  User.findByIdAndUpdate(applicant, {
-    $push: {offers: offerID}
-  })
-  .then(response => {
-    Offer.findByIdAndUpdate(offerID, {
-      $push: {candidates: applicant}
-    })
-    .then(() => console.log('Succesfully applied to offer'))
-    .catch(error => res.json(error))
-    res.status(200).json(response)
-  })
-  .catch(theError => res.json(theError))
-
 });
 
 
