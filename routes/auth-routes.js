@@ -21,24 +21,17 @@ authRoutes.post('/signup', (req, res, next) => {
   const hashedPassword = bcrypt.hashSync(password, salt);
   var newUser = {}
 
-  console.log(email, password, kind);
-
   if (!email || !password) {
     res.status(400).json({ message: 'Please, provide all the required fields.' });
-    console.log('1')
     return;
   }
 
-  console.log(emailReg.test(email))
-
   if (!emailReg.test(email)) {
-    console.log('bbbb')
     res.status(400).json( {message: 'Please enter a valid email'} )
     return;
   }
   
   if (!passwordReg.test(password)) {
-    console.log('vvvv')
     res.status(400).json( {message: 'Password must have one lowercase, one uppercase, a number, a special character and must be at least 8 digits long'} )
     return;
   }
@@ -49,7 +42,6 @@ authRoutes.post('/signup', (req, res, next) => {
   .then(foundUser => {
 
     if(foundUser) {
-      console.log('found user')
       res.status(400).json({ message: "This email address is already registered" });
       //TO DO: REDIRECT TO LOGIN
       return;
@@ -77,12 +69,9 @@ authRoutes.post('/signup', (req, res, next) => {
       req.login(newUser, error => {
 
         if (error) {
-          console.log(error)
           res.status(500).json({message: 'Error while login after signup'})
           return;
         }
-
-        console.log('logged in')
 
         res.status(200).json({newUser});
         //return;
@@ -96,8 +85,6 @@ authRoutes.post('/signup', (req, res, next) => {
 }) //authRoutes
 
 authRoutes.post('/login', (req, res, next) => {
-
-  console.log(req.body)
 
   passport.authenticate('local', (err, theUser, failureDetails) => {
 
