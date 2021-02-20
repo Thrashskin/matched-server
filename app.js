@@ -11,6 +11,7 @@ const path         = require('path');
 const session      = require('express-session');
 const passport     = require('passport');
 const MongoStore     = require('connect-mongo')(session);
+const cors = require('cors');
 
 require('./configs/passport');
 
@@ -56,6 +57,13 @@ app.use(passport.session());
 
 // default value for title local
 app.locals.title = 'Matched - Go right and land your dream job!';
+
+
+app.use(cors({
+  credentials: true,
+  origin: ['http://localhost:3000']
+}));
+
 
 //ROUTES MIDDLEWARE
 

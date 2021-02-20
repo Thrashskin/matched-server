@@ -21,6 +21,10 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
+  salaryExpectations: {
+    from: { type: Number},
+    to: { type: Number}
+  },
   name: String,
   city: String,
   country: String,
@@ -28,7 +32,6 @@ const userSchema = new Schema({
   offers: [{ 
     type: Schema.Types.ObjectId, 
     ref: 'Offer',
-    unique: true,
    }],
 }, options);
 

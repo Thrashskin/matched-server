@@ -15,64 +15,45 @@ var Company = require('../models/Company');
 authRoutes.post('/signup', (req, res, next) => {
   
   const {email, password, kind} = req.body; //bodyparser allowed in app.js
+  const emailReg = new RegExp(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/);
+  const passwordReg = new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/)
+  const salt = bcrypt.genSaltSync(10);
+  const hashedPassword = bcrypt.hashSync(password, salt);
+  var newUser = {}
+
+  console.log(email, password, kind);
 
   if (!email || !password) {
     res.status(400).json({ message: 'Please, provide all the required fields.' });
+    console.log('1')
     return;
   }
 
-  const emailReg = new RegExp(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/);
+  console.log(emailReg.test(email))
+
   if (!emailReg.test(email)) {
+    console.log('bbbb')
     res.status(400).json( {message: 'Please enter a valid email'} )
     return;
   }
-
-  const passwordReg = new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/)
+  
   if (!passwordReg.test(password)) {
+    console.log('vvvv')
     res.status(400).json( {message: 'Password must have one lowercase, one uppercase, a number, a special character and must be at least 8 digits long'} )
     return;
   }
 
-  User.findOne( {email}, (error, foundUser) => {
-
-    if(error) {
-      res.status(500).json( {message: "Something went wrong"} );
-      return;
-    }
+  
+  // }); //findOne-email
+  User.findOne({email})
+  .then(foundUser => {
 
     if(foundUser) {
+      console.log('found user')
       res.status(400).json({ message: "This email address is already registered" });
-      console.log('duplicated email')
       //TO DO: REDIRECT TO LOGIN
       return;
     }
-
-  }); //findOne-email
-
-  // if (kind === 'Company') {
-
-  //   User.findOne( {name}, (error, foundCompany) => {
-
-  //     if(error) {
-  //       res.status(500).json( {message: "Something went wrong"} );
-  //       return;
-  //     }
-  
-  //     if(foundCompany) {
-  //       res.status(400).json({ message: "This company is already registered in our database" });
-  //       console.log('duplicated email')
-  //       //TO DO: REDIRECT TO LOGIN
-  //       return;
-  //     }
-  
-  //   }); //findOne
-  // }
-
-
-  const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(password, salt);
-
-    var newUser = {}
 
     if (kind === 'Company') {
       newUser = new Company({
@@ -96,22 +77,23 @@ authRoutes.post('/signup', (req, res, next) => {
       req.login(newUser, error => {
 
         if (error) {
+          console.log(error)
           res.status(500).json({message: 'Error while login after signup'})
           return;
         }
 
-        res.status(200).json(newUser);
+        console.log('logged in')
 
-        });
-
+        res.status(200).json({newUser});
+        //return;
+      });
     })
+  })
+  .catch(error => {
+    res.status(400).json({ message: "Error" })
+  });
 
 }) //authRoutes
-
-//LOGIN
-// authRoutes.get('/login', (req, res, next) => {
-//   console.log('login route')
-// })
 
 authRoutes.post('/login', (req, res, next) => {
 
@@ -145,10 +127,13 @@ authRoutes.get('/logout', (req, res) => {
   res.status(200).json({ message: 'Logged out' })
 })
 
+authRoutes.get('/loggedin', (req, res, next) => {
+  // req.isAuthenticated() is defined by passport
+  if (req.isAuthenticated()) {
+      res.status(200).json(req.user);
+      return;
+  }
+  res.status(403).json({ message: 'Unauthorized' });
+});
 
 module.exports = authRoutes;
-
-
-
-
-
