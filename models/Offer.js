@@ -16,9 +16,7 @@ const offerSchema = new Schema({
     to: { type: Number, required: true }
   },
   currency: {
-    type: String,
-    enum: ['Dollar', 'Euro'],
-    default: 'Euro'
+    type: String
   },
   requiredExperience: {type: Number, default: 0},
   publisher: {type: Schema.Types.ObjectId, ref: 'Company', required: true},
