@@ -22,9 +22,7 @@ const offerSchema = new Schema({
   publisher: {type: Schema.Types.ObjectId, ref: 'Company', required: true},
   candidates: [{
     type: Schema.Types.ObjectId, 
-    ref: 'Seeker', 
-    required: true,
-    unique: true
+    ref: 'Seeker'
   }]
 })
 

@@ -18,12 +18,10 @@ offerRoutes.get('/offer/:offerID', (req, res, next) => {
 
 //POST new offer
 
-offerRoutes.post('/offer', (req, res, next) => {
+offerRoutes.post('/offer', (req, res, next) => { 
 
   var publisher = req.session.passport.user;
   var newOffer = new Offer({publisher,...req.body})
-
-  console.log(newOffer)
 
   Offer.create(newOffer)
   .then(createdOffer => {
@@ -33,9 +31,12 @@ offerRoutes.post('/offer', (req, res, next) => {
       $push: { offers: createdOffer._id }
     })
     .then(response => res.json(response))
-    .catch(error => res.json(error)); //catch-companyFindByIdAndUpdate
+    .catch(error => res.status(409).json(error)); //catch-companyFindByIdAndUpdate
   })
-  .catch(error => res.json(error));//catch-Offer.create
+  .catch(error => {
+    console.log(error)
+    res.status(408).json(error)
+  });//catch-Offer.create
 
 
 
