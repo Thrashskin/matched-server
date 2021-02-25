@@ -16,6 +16,15 @@ offerRoutes.get('/offer/:offerID', (req, res, next) => {
   .catch(error => res.json(error));
 });
 
+//GET all offers
+offerRoutes.get('/:companyID/offers', (req,rex,next) => {
+
+  Offer.find( {_id: companyID} )
+  .then(offersFromDB => res.status(200).json(offersFromDB))
+  .catch(error => res.status(400).json(error));
+
+})
+
 //POST new offer
 
 offerRoutes.post('/offer', (req, res, next) => { 
