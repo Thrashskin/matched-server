@@ -17,9 +17,11 @@ offerRoutes.get('/offer/:offerID', (req, res, next) => {
 });
 
 //GET all offers
-offerRoutes.get('/:companyID/offers', (req,rex,next) => {
+offerRoutes.get('/:companyID/offers', (req,res,next) => {
 
-  Offer.find( {_id: companyID} )
+  let companyID = req.params.companyID
+
+  Offer.find( {publisher: companyID} )
   .then(offersFromDB => res.status(200).json(offersFromDB))
   .catch(error => res.status(400).json(error));
 
