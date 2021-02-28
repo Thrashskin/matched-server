@@ -78,13 +78,38 @@ offerRoutes.delete('/offer/:offerID', (req, res, next) => {
     return;
   }
 
-  Offer.findByIdAndRemove(req.params.offerID)
+  let {user} = req.session.passport;
+  let {offerID} = req.params
+
+
+
+  // Offer.findByIdAndRemove(req.params.offerID)
+  // .then(() => {
+  //   res.json({ message: `Offer ${req.params.id} deleted.` });
+  // })
+  // .catch(error => {
+  //   res.json(error);
+  // });
+
+
+  Offer.findByIdAndRemove(offerID)
   .then(() => {
+
+    User.findByIdAndUpdate(user, {
+      $pull: {offers: offerID}
+    })
+    .then(response => console.log(response))
+    .catch(error => console.log(error))
+
     res.json({ message: `Offer ${req.params.id} deleted.` });
+
   })
   .catch(error => {
     res.json(error);
   });
+
+
+  //res.json({ message: `Offer ${req.params.id} deleted.` });
 
 });
 
