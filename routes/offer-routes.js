@@ -150,5 +150,37 @@ offerRoutes.put('/offer/:offerID/apply', (req, res, next) => {
   .catch(error => res.json(error));
 });
 
+//SAVE OFFER
+
+offerRoutes.put('/offer/:offerID/save', (req, res, next) => {
+
+  if (!mongoose.Types.ObjectId.isValid(req.params.offerID)) {
+    res.status(400).json({ message: 'Specified id is not valid' });
+    return;
+  }
+
+  var applicant = req.session.passport.user;
+  var {offerID} = req.params;
+
+  //Check that the User is a Seeker
+
+  User.findById(applicant)
+  .then(userFromDB => {
+    if (userFromDB.saved.includes(offerID)) {
+      res.status(400).json({message: 'You already saved this offer'});
+      return;
+    }
+      //Push the offerID into the savedOffers array of the Seeker
+    User.findByIdAndUpdate(applicant, {
+      $push: {saved: offerID}
+    })
+    .then(response => {
+      res.status(200).json(response)
+    })
+    .catch(theError => res.json(theError))
+  })
+  .catch(error => res.json(error));
+});
+
 
 module.exports = offerRoutes;
