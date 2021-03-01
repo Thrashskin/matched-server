@@ -1,5 +1,6 @@
 const express = require('express');
 const Company = require('../models/Company');
+const Seeker = require('../models/Seeker');
 const offerRoutes = express.Router();
 const Offer = require('../models/Offer');
 const mongoose = require('mongoose');
@@ -130,7 +131,7 @@ offerRoutes.put('/offer/:offerID/apply', (req, res, next) => {
   User.findById(applicant)
   .then(userFromDB => {
     if (userFromDB.offers.includes(offerID)) {
-      res.status(400).json({message: 'User is already in the list of candidates for this offer'});
+      res.status(405).json({message: 'User is already in the list of candidates for this offer'});
       return;
     }
       //Push the offerID into the appliedOffers array of the Seeker
@@ -154,33 +155,30 @@ offerRoutes.put('/offer/:offerID/apply', (req, res, next) => {
 
 offerRoutes.put('/offer/:offerID/save', (req, res, next) => {
 
-  if (!mongoose.Types.ObjectId.isValid(req.params.offerID)) {
-    res.status(400).json({ message: 'Specified id is not valid' });
-    return;
-  }
-
-  var applicant = req.session.passport.user;
-  var {offerID} = req.params;
-
-  //Check that the User is a Seeker
-
-  User.findById(applicant)
-  .then(userFromDB => {
-    if (userFromDB.saved.includes(offerID)) {
-      res.status(400).json({message: 'You already saved this offer'});
+    if (!mongoose.Types.ObjectId.isValid(req.params.offerID)) {
+      res.status(400).json({ message: 'Specified id is not valid' });
       return;
     }
-      //Push the offerID into the savedOffers array of the Seeker
-    User.findByIdAndUpdate(applicant, {
-      $push: {saved: offerID}
-    })
-    .then(response => {
-      res.status(200).json(response)
-    })
-    .catch(theError => res.json(theError))
-  })
-  .catch(error => res.json(error));
-});
 
+    var userID = req.session.passport.user;
+    var {offerID} = req.params
+
+    User.findById(userID)
+    .then(userFromDB => {
+
+      if (userFromDB.saved.includes(offerID)) {
+        res.status(406).json({message: 'You already saved this offer'});
+        return;
+      }
+
+      Seeker.findByIdAndUpdate(userID, {
+        $push:{saved: offerID}
+      })
+      .then(response => res.status(200).json(response)) //findAndUpdate
+      .catch(error => res.status(400).json(error));//findAndUpdate
+      }) // findById
+      .catch(error => res.status(400).json(error)) // findById
+
+});
 
 module.exports = offerRoutes;
