@@ -17,7 +17,16 @@ offerRoutes.get('/offer/:offerID', (req, res, next) => {
     .catch(error => res.json(error));
 });
 
-//GET all offers
+//GET ALL offers 
+
+offerRoutes.get('/offers/all', (req, res, next) => {
+  Offer.find().populate('publisher')
+    .then(offersFromDB => res.status(200).json(offersFromDB))
+    .catch(error => res.status(400).json(error));
+
+});
+
+//GET all offers for ONE company
 offerRoutes.get('/:companyID/offers', (req, res, next) => {
 
   let companyID = req.params.companyID
@@ -258,7 +267,7 @@ offerRoutes.put('/offer/:offerID/reject', (req, res, next) => {
   User.findById(userID)
     .then(userFromDB => {
 
-      if (userFromDB.saved.includes(offerID)) { 
+      if (userFromDB.saved.includes(offerID)) {
         res.status(406).json({ message: 'This offer has already been rejected' });
         return;
       }
