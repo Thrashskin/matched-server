@@ -36,25 +36,31 @@ offerRoutes.get('/offers/all', (req, res, next) => {
   let { user } = req.session.passport
 
   Seeker.findById(user)
-  .then(seekerFromDB => {
-    let {city, country, stack} = seekerFromDB;
+    .then(seekerFromDB => {
+      let { city, country, stack } = seekerFromDB;
 
-    Offer.find({city: city, country: country})
-    .then(offersFromDB => {
-      let filteredOffers = offersFromDB.filter(offer => {
-        let lowerCaseStack = offer.stack.map( tech => tech.toLoweCase());
-
-      })
+      Offer.find()
+        .then(offersFromDB => {
+          //console.log(offersFromDB)
+          let filteredOffers = offersFromDB.filter(offer => {
+            //console.log(offer)
+            let offerLowerCaseStack = offer.stack.map(tech => tech.toLowerCase());
+            let seekerLowerCaseStack = stack.map(tech => tech.toLowerCase());
+            let matchesStack = seekerLowerCaseStack.some(tech => offerLowerCaseStack.includes(tech)); //At least on of the technologies matches
+            let locationMatches = (offer.country.toLowerCase() === country.toLowerCase()) && (offer.city.toLowerCase() === city.toLowerCase())
+            if (matchesStack && locationMatches) {
+              console.log(offer)
+              return offer;
+            }
+          }); //filter()
+          res.status(200).json(filteredOffers)
+        })
+        .catch(error => {
+          console.log(error)
+          res.status(407).json(error)
+        });
     })
-    .catch(error => console.log(error));
-  })
-  .catch(error => console.log(error));
-
-
-  Offer.find().populate('publisher')
-    .then(offersFromDB => res.status(200).json(offersFromDB))
-    .catch(error => res.status(400).json(error));
-
+    .catch(error => res.status(408).json(error));
 });
 
 //GET all offers for ONE company
