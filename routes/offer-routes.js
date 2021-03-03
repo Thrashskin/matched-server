@@ -243,4 +243,35 @@ offerRoutes.put('/offer/:offerID/save', (req, res, next) => {
 
 });
 
+//REJECT OFFER
+
+offerRoutes.put('/offer/:offerID/reject', (req, res, next) => {
+
+  if (!mongoose.Types.ObjectId.isValid(req.params.offerID)) {
+    res.status(400).json({ message: 'Specified id is not valid' });
+    return;
+  }
+
+  var userID = req.session.passport.user;
+  var { offerID } = req.params
+
+  User.findById(userID)
+    .then(userFromDB => {
+
+      if (userFromDB.saved.includes(offerID)) { 
+        res.status(406).json({ message: 'This offer has already been rejected' });
+        return;
+      }
+
+      Seeker.findByIdAndUpdate(userID, {
+        $push: { rejected: offerID }
+      })
+        .then(response => res.status(200).json(response)) //findAndUpdate
+        .catch(error => res.status(400).json(error));//findAndUpdate
+    }) // findById
+    .catch(error => res.status(400).json(error)) // findById
+
+});
+
+
 module.exports = offerRoutes;

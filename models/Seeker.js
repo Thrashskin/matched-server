@@ -16,6 +16,7 @@ const seekerSchema = new Schema({
   }],
   stack: [String],
   saved: [ { type: mongoose.Schema.Types.ObjectId, ref: 'Offer' } ],
+  rejected: [ { type: mongoose.Schema.Types.ObjectId, ref: 'Offer' } ],
 }, options);
 
 const Seeker = User.discriminator('Seeker', seekerSchema);
