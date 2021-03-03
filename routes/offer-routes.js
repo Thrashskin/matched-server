@@ -19,7 +19,38 @@ offerRoutes.get('/offer/:offerID', (req, res, next) => {
 
 //GET ALL offers 
 
+// offerRoutes.get('/offers/all', (req, res, next) => {
+
+//   console.log(req.session.passport.user)
+
+
+
+//   Offer.find().populate('publisher')
+//     .then(offersFromDB => res.status(200).json(offersFromDB))
+//     .catch(error => res.status(400).json(error));
+
+// });
+
 offerRoutes.get('/offers/all', (req, res, next) => {
+
+  let { user } = req.session.passport
+
+  Seeker.findById(user)
+  .then(seekerFromDB => {
+    let {city, country, stack} = seekerFromDB;
+
+    Offer.find({city: city, country: country})
+    .then(offersFromDB => {
+      let filteredOffers = offersFromDB.filter(offer => {
+        let lowerCaseStack = offer.stack.map( tech => tech.toLoweCase());
+
+      })
+    })
+    .catch(error => console.log(error));
+  })
+  .catch(error => console.log(error));
+
+
   Offer.find().populate('publisher')
     .then(offersFromDB => res.status(200).json(offersFromDB))
     .catch(error => res.status(400).json(error));
@@ -267,7 +298,7 @@ offerRoutes.put('/offer/:offerID/reject', (req, res, next) => {
   User.findById(userID)
     .then(userFromDB => {
 
-      if (userFromDB.saved.includes(offerID)) {
+      if (userFromDB.rejected.includes(offerID)) {
         res.status(406).json({ message: 'This offer has already been rejected' });
         return;
       }

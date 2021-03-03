@@ -10,6 +10,8 @@ const offerSchema = new Schema({
     type: String,
     required: true
   },
+  city: [String],
+  country: [String],
   stack: [String],
   salary: {
     from: { type: Number, required: true },
