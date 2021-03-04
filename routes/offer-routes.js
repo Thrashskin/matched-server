@@ -49,7 +49,7 @@ offerRoutes.get('/offers/all', (req, res, next) => {
             let matchesStack = seekerLowerCaseStack.some(tech => offerLowerCaseStack.includes(tech)); //At least on of the technologies matches
             let locationMatches = (offer.country.toLowerCase() === country.toLowerCase()) && (offer.city.toLowerCase() === city.toLowerCase())
             if (matchesStack && locationMatches) {
-              console.log(offer)
+              //console.log(offer)
               return offer;
             }
           }); //filter()
