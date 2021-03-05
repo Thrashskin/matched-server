@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 const http = require('http');
-var app = require('../app').app;
+var app = require('../app')
+var server = http.createServer(app);
 
 // catch 404 and render a not-found.hbs template
 app.use((req, res, next) => {
@@ -20,15 +21,6 @@ app.use((err, req, res, next) => {
   }
 });
 
-var server = require('../app').server;
-const io = require('socket.io')(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-    credentials: true
-  }
-}
-);
 
 server.on('error', error => {
   if (error.syscall !== 'listen') { throw error }

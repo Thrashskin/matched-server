@@ -10,8 +10,8 @@ const { User } = require('../models/User');
 offerRoutes.get('/offer/:offerID', (req, res, next) => {
   const { offerID } = req.params
 
-  Offer.findById(offerID).
-    then(offerFromDB => {
+  Offer.findById(offerID).populate('publisher')
+    .then(offerFromDB => {
       res.status(200).json(offerFromDB);
     })
     .catch(error => res.json(error));
@@ -132,7 +132,7 @@ offerRoutes.post('/offer', (req, res, next) => {
 
 
 
-});//offerRoutes.post
+});
 
 //PUT edit offer
 
@@ -318,6 +318,19 @@ offerRoutes.put('/offer/:offerID/reject', (req, res, next) => {
     .catch(error => res.status(400).json(error)) // findById
 
 });
+
+//GET CANDIDATES
+
+offerRoutes.get('/offer/:offerID/candidates', (req, res, next) => {
+  let { offerID } = req.params;
+
+  Offer.findById(offerID).populate('candidates')
+  .then(offerFromDB => {
+    console.log(offerFromDB)
+    res.status(200).json(offerFromDB.candidates)
+  })
+  .catch(error => res.status(400).json(error));
+})
 
 
 module.exports = offerRoutes;

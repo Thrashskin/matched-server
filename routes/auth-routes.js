@@ -111,7 +111,7 @@ authRoutes.post('/login', (req, res, next) => {
 
 authRoutes.get('/logout', (req, res) => {
 
-  console.log(req)
+  //console.log(req)
   req.logout();
   res.status(200).json({ message: 'Logged out' })
 })
