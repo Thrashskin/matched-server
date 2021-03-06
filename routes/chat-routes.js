@@ -20,7 +20,7 @@ chatRoutes.post('/chats/create', (req, res, next) => {
         let chat = chatsFromDB[0]
         console.log('There is already a chat between these two users')
         console.log(chat)
-        res.status(200).json( chat );
+        res.status(200).json(chat);
       } else {
         const newChat = new Chat({
           company: company,
@@ -36,12 +36,12 @@ chatRoutes.post('/chats/create', (req, res, next) => {
           }
 
           Chat.find({ company: company, seeker: seeker })
-          .then(chatsFromDB => {
-            let chat = chatsFromDB[0]
-            console.log('Chat object created successfully')
-            res.status(200).json( chat );
-          })
-          .catch(error => res.status(400).json(error))
+            .then(chatsFromDB => {
+              let chat = chatsFromDB[0]
+              console.log('Chat object created successfully')
+              res.status(200).json(chat);
+            })
+            .catch(error => res.status(400).json(error))
 
           // console.log({newChat})
           // res.status(200).json( newChat );
@@ -51,6 +51,7 @@ chatRoutes.post('/chats/create', (req, res, next) => {
     .catch(error => res.status(400).json(error))
 });
 
+//GET specific chat
 chatRoutes.get('/chats/:chatID', (req, res, next) => {
 
   const { chatID } = req.params;
@@ -63,6 +64,7 @@ chatRoutes.get('/chats/:chatID', (req, res, next) => {
 
 });
 
+//POST create message
 chatRoutes.post('/chats/:chatID/createMessage', (req, res, next) => {
 
   console.log(req.body)
@@ -85,15 +87,33 @@ chatRoutes.post('/chats/:chatID/createMessage', (req, res, next) => {
     console.log(msg)
 
     Chat.findByIdAndUpdate(chatID, {
-      $push: {messages: msg._id}
+      $push: { messages: msg._id }
     }).
-    then(response => {
-      console.log(response)
-      res.status(200).json(response);
-    })
-    .catch(error => console.log(error))
+      then(response => {
+        console.log(response)
+        res.status(200).json(response);
+      })
+      .catch(error => console.log(error))
   })
 
+})
+
+//GET user messages
+chatRoutes.get('/:userID/chats', (req, res, next) => {
+
+  let { userID } = req.params
+
+  Chat.find({
+    $or: [
+      { company: userID },
+      { seeker: userID }
+    ]
+  }).populate('company')
+    .populate('seeker')
+    .then(chatsFromDB => {
+      res.status(200).json(chatsFromDB);
+    })
+    .catch(error => res.status(400).json({ message: 'Error while retrieving chats' }))
 })
 
 module.exports = chatRoutes;
