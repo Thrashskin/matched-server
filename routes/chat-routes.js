@@ -2,6 +2,7 @@ const express = require('express');
 const chatRoutes = express.Router();
 const mongoose = require('mongoose');
 const Chat = require('../models/Chat');
+const Message = require('../models/Message');
 
 //CREATE CHAT
 
@@ -54,7 +55,7 @@ chatRoutes.get('/chats/:chatID', (req, res, next) => {
 
   const { chatID } = req.params;
 
-  Chat.findById(chatID)
+  Chat.findById(chatID).populate('messages')
     .then(chatFromDB => {
       res.status(200).json(chatFromDB);
     })
@@ -62,5 +63,37 @@ chatRoutes.get('/chats/:chatID', (req, res, next) => {
 
 });
 
-chatRoutes.post('/chats/:chatID/createMessage')
+chatRoutes.post('/chats/:chatID/createMessage', (req, res, next) => {
+
+  console.log(req.body)
+  let { senderID, senderName, content } = req.body
+  let { chatID } = req.params
+
+  let newMessage = new Message({
+    senderName: senderName,
+    senderID: senderID,
+    content: content
+  });
+
+  newMessage.save((error, msg) => {
+
+    if (error) {
+      res.status(400).json({ message: 'Error while creating new message object' });
+      return;
+    }
+
+    console.log(msg)
+
+    Chat.findByIdAndUpdate(chatID, {
+      $push: {messages: msg._id}
+    }).
+    then(response => {
+      console.log(response)
+      res.status(200).json(response);
+    })
+    .catch(error => console.log(error))
+  })
+
+})
+
 module.exports = chatRoutes;
