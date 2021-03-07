@@ -22,17 +22,17 @@ authRoutes.post('/signup', (req, res, next) => {
   var newUser = {}
 
   if (!email || !password) {
-    res.status(400).json({ message: 'Please, provide all the required fields.' });
+    res.status(400).json({ errorMessage: 'Please, provide all the required fields.' });
     return;
   }
 
   if (!emailReg.test(email)) {
-    res.status(400).json( {message: 'Please enter a valid email'} )
+    res.status(400).json( {errorMessage: 'Please enter a valid email'} )
     return;
   }
   
   if (!passwordReg.test(password)) {
-    res.status(400).json( {message: 'Password must have one lowercase, one uppercase, a number, a special character and must be at least 8 digits long'} )
+    res.status(400).json( {errorMessage: 'Password must have one lowercase, one uppercase, a number, a special character and must be at least 8 digits long'} )
     return;
   }
 
@@ -42,7 +42,7 @@ authRoutes.post('/signup', (req, res, next) => {
   .then(foundUser => {
 
     if(foundUser) {
-      res.status(400).json({ message: "This email address is already registered" });
+      res.status(400).json({ errorMessage: "This email address is already registered" });
       //TO DO: REDIRECT TO LOGIN
       return;
     }
@@ -62,14 +62,14 @@ authRoutes.post('/signup', (req, res, next) => {
     newUser.save(error => {
       
       if(error) {
-        res.status(400).json({ message: 'Error while saving new user to database' });
+        res.status(400).json({ errorMessage: 'Error while saving new user to database' });
         return; 
       }
 
       req.login(newUser, error => {
 
         if (error) {
-          res.status(500).json({message: 'Error while login after signup'})
+          res.status(500).json({errorMessage: 'Error while login after signup'})
           return;
         }
 
@@ -79,7 +79,7 @@ authRoutes.post('/signup', (req, res, next) => {
     })
   })
   .catch(error => {
-    res.status(400).json({ message: "Error" })
+    res.status(400).json({ errorMessage: "Something went wrong" })
   });
 
 }) //authRoutes
