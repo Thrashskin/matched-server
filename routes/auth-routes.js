@@ -78,7 +78,7 @@ authRoutes.post('/signup', (req, res, next) => {
     })
   })
   .catch(error => {
-    res.status(400).json({ errorMessage: "Something went wrong" })
+    res.status(500).json({ errorMessage: "Something went wrong" })
   });
 
 }) //authRoutes
