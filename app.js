@@ -49,14 +49,28 @@ app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 
 
 //SESSION SETTINGS  
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  store: new MongoStore({
-    mongooseConnection: mongoose.connection
-  }),
-  resave: true,
-  saveUninitialized: false
-}));
+// app.use(session({
+//   secret: process.env.SESSION_SECRET,
+//   store: new MongoStore({
+//     mongooseConnection: mongoose.connection
+//   }),
+//   resave: true,
+//   saveUninitialized: false
+// }));
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax', // must be 'none' to enable cross-site delivery
+      secure: process.env.NODE_ENV === "production", // must be true if sameSite='none'
+    }
+  })
+);
+
+app.set("trust proxy", 1);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -68,7 +82,7 @@ app.locals.title = 'Matched - Go right and land your dream job!';
 
 app.use(cors({
   credentials: true,
-  origin: ['http://localhost:3000']
+  origin: process.env.FRONTEND_POINT,
 }));
 
 
