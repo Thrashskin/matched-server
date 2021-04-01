@@ -10,8 +10,6 @@ var Company = require('../models/Company');
 
 //SIGNUP
 
-//WARNING: we haven't defined the GET route for signup YET.
-
 authRoutes.post('/signup', (req, res, next) => {
   
   const {email, password, kind} = req.body; //bodyparser allowed in app.js
@@ -36,14 +34,11 @@ authRoutes.post('/signup', (req, res, next) => {
     return;
   }
 
-  
-  // }); //findOne-email
   User.findOne({email})
   .then(foundUser => {
 
     if(foundUser) {
       res.status(400).json({ errorMessage: "This email address is already registered" });
-      //TO DO: REDIRECT TO LOGIN
       return;
     }
 
@@ -62,7 +57,7 @@ authRoutes.post('/signup', (req, res, next) => {
     newUser.save(error => {
       
       if(error) {
-        res.status(400).json({ errorMessage: 'Error while saving new user to database' });
+        res.status(500).json({ errorMessage: 'Error while saving new user to database' });
         return; 
       }
 
@@ -98,7 +93,6 @@ authRoutes.post('/login', (req, res, next) => {
       return;
     }
  
-    // save user in session: req.user
     req.login(theUser, err => {
       if (err) {
         return next(err);
@@ -109,8 +103,6 @@ authRoutes.post('/login', (req, res, next) => {
 });
 
 authRoutes.get('/logout', (req, res) => {
-
-  //console.log(req)
   req.logout();
   res.status(200).json({ message: 'Logged out' })
 })

@@ -6,12 +6,6 @@ const options = {
 
  }
 
-//  kind: {
-//   type: String,
-//   required: true,
-//   enum: ['Seeker', 'Company']
-// },
-
 const userSchema = new Schema({
   email: {
     type: String,

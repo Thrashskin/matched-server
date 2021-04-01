@@ -19,18 +19,6 @@ offerRoutes.get('/offer/:offerID', (req, res, next) => {
 
 //GET ALL offers 
 
-// offerRoutes.get('/offers/all', (req, res, next) => {
-
-//   console.log(req.session.passport.user)
-
-
-
-//   Offer.find().populate('publisher')
-//     .then(offersFromDB => res.status(200).json(offersFromDB))
-//     .catch(error => res.status(400).json(error));
-
-// });
-
 offerRoutes.get('/offers/all', (req, res, next) => {
 
   let { user } = req.session.passport
@@ -41,26 +29,23 @@ offerRoutes.get('/offers/all', (req, res, next) => {
 
       Offer.find()
         .then(offersFromDB => {
-          //console.log(offersFromDB)
           let filteredOffers = offersFromDB.filter(offer => {
-            //console.log(offer)
             let offerLowerCaseStack = offer.stack.map(tech => tech.toLowerCase());
             let seekerLowerCaseStack = stack.map(tech => tech.toLowerCase());
             let matchesStack = seekerLowerCaseStack.some(tech => offerLowerCaseStack.includes(tech)); //At least on of the technologies matches
             let locationMatches = (offer.country.toLowerCase() === country.toLowerCase()) && (offer.city.toLowerCase() === city.toLowerCase())
             if (matchesStack && locationMatches) {
-              //console.log(offer)
               return offer;
             }
-          }); //filter()
+          });
           res.status(200).json(filteredOffers)
         })
         .catch(error => {
           console.log(error)
-          res.status(407).json(error)
+          res.status(500).json(error)
         });
     })
-    .catch(error => res.status(408).json(error));
+    .catch(error => res.status(500).json(error));
 });
 
 //GET all offers for ONE company
@@ -70,7 +55,7 @@ offerRoutes.get('/:companyID/offers', (req, res, next) => {
 
   Offer.find({ publisher: companyID })
     .then(offersFromDB => res.status(200).json(offersFromDB))
-    .catch(error => res.status(400).json(error));
+    .catch(error => res.status(500).json(error));
 
 })
 
@@ -79,21 +64,12 @@ offerRoutes.get('/:seekerID/applications', (req, res, next) => {
 
   let seekerID = req.params.seekerID
 
-  // Offer.find({ publisher: companyID })
-  //   .then(offersFromDB => res.status(200).json(offersFromDB))
-  //   .catch(error => res.status(400).json(error));
-
   Seeker.findById(seekerID)
     .populate('offers')
     .then(userFromDB => {
-      console.log(userFromDB.offers)
       res.status(200).json(userFromDB.offers)
     })
-    .catch(error => res.status(400).json(error));
-
-
-
-
+    .catch(error => res.status(500).json(error));
 })
 
 //GET saved offers
@@ -123,12 +99,12 @@ offerRoutes.post('/offer', (req, res, next) => {
         $push: { offers: createdOffer._id }
       })
         .then(response => res.json(response))
-        .catch(error => res.status(409).json(error)); //catch-companyFindByIdAndUpdate
+        .catch(error => res.status(500).json(error));
     })
     .catch(error => {
       console.log(error)
-      res.status(408).json(error)
-    });//catch-Offer.create
+      res.status(500).json(error)
+    });
 
 
 
@@ -162,17 +138,6 @@ offerRoutes.delete('/offer/:offerID', (req, res, next) => {
   let { user } = req.session.passport;
   let { offerID } = req.params
 
-
-
-  // Offer.findByIdAndRemove(req.params.offerID)
-  // .then(() => {
-  //   res.json({ message: `Offer ${req.params.id} deleted.` });
-  // })
-  // .catch(error => {
-  //   res.json(error);
-  // });
-
-
   Offer.findByIdAndRemove(offerID)
     .then(() => {
 
@@ -188,9 +153,6 @@ offerRoutes.delete('/offer/:offerID', (req, res, next) => {
     .catch(error => {
       res.json(error);
     });
-
-
-  //res.json({ message: `Offer ${req.params.id} deleted.` });
 
 });
 
@@ -211,7 +173,7 @@ offerRoutes.put('/offer/:offerID/apply', (req, res, next) => {
   User.findById(applicant)
     .then(userFromDB => {
       if (userFromDB.offers.includes(offerID)) {
-        res.status(405).json({ message: 'User is already in the list of candidates for this offer' });
+        res.status(400).json({ message: 'User is already in the list of candidates for this offer' });
         return;
       }
       //Push the offerID into the appliedOffers array of the Seeker
@@ -235,28 +197,6 @@ offerRoutes.put('/offer/:offerID/apply', (req, res, next) => {
         .catch(theError => res.json(theError))
     })
     .catch(error => res.json(error));
-
-  // User.findById(applicant)
-  //   .then(userFromDB => {
-  //     if (userFromDB.offers.includes(offerID)) {
-  //       res.status(405).json({ message: 'User is already in the list of candidates for this offer' });
-  //       return;
-  //     }
-  //     //Push the offerID into the appliedOffers array of the Seeker
-  //     User.findByIdAndUpdate(applicant, {
-  //       $push: { offers: offerID }
-  //     })
-  //       .then(response => {
-  //         Offer.findByIdAndUpdate(offerID, {
-  //           $push: { candidates: applicant }
-  //         })
-  //           .then(() => console.log('Succesfully applied to offer'))
-  //           .catch(error => res.json(error))
-  //         res.status(200).json(response)
-  //       })
-  //       .catch(theError => res.json(theError))
-  //   })
-  //   .catch(error => res.json(error));
 });
 
 //SAVE OFFER
@@ -275,17 +215,17 @@ offerRoutes.put('/offer/:offerID/save', (req, res, next) => {
     .then(userFromDB => {
 
       if (userFromDB.saved.includes(offerID)) {
-        res.status(406).json({ message: 'You already saved this offer' });
+        res.status(400).json({ message: 'You already saved this offer' });
         return;
       }
 
       Seeker.findByIdAndUpdate(userID, {
         $push: { saved: offerID }
       })
-        .then(response => res.status(200).json(response)) //findAndUpdate
-        .catch(error => res.status(400).json(error));//findAndUpdate
-    }) // findById
-    .catch(error => res.status(400).json(error)) // findById
+        .then(response => res.status(200).json(response)) 
+        .catch(error => res.status(400).json(error));
+    }) 
+    .catch(error => res.status(400).json(error))
 
 });
 
@@ -312,10 +252,10 @@ offerRoutes.put('/offer/:offerID/reject', (req, res, next) => {
       Seeker.findByIdAndUpdate(userID, {
         $push: { rejected: offerID }
       })
-        .then(response => res.status(200).json(response)) //findAndUpdate
-        .catch(error => res.status(400).json(error));//findAndUpdate
-    }) // findById
-    .catch(error => res.status(400).json(error)) // findById
+        .then(response => res.status(200).json(response)) 
+        .catch(error => res.status(400).json(error));
+    })
+    .catch(error => res.status(400).json(error))
 
 });
 
@@ -326,7 +266,6 @@ offerRoutes.get('/offer/:offerID/candidates', (req, res, next) => {
 
   Offer.findById(offerID).populate('candidates')
   .then(offerFromDB => {
-    console.log(offerFromDB)
     res.status(200).json(offerFromDB.candidates)
   })
   .catch(error => res.status(400).json(error));

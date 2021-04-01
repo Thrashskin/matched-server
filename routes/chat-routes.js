@@ -8,18 +8,14 @@ const Message = require('../models/Message');
 
 chatRoutes.post('/chats/create', (req, res, next) => {
 
-  console.log('body', req.body)
-
   const { company, seeker } = req.body;
 
 
   Chat.find({ company: company, seeker: seeker })
     .then(chatsFromDB => {
       if (chatsFromDB.length > 0) {
-        console.log(chatsFromDB)
         let chat = chatsFromDB[0]
         console.log('There is already a chat between these two users')
-        console.log(chat)
         res.status(200).json(chat);
       } else {
         const newChat = new Chat({
@@ -43,8 +39,7 @@ chatRoutes.post('/chats/create', (req, res, next) => {
             })
             .catch(error => res.status(400).json(error))
 
-          // console.log({newChat})
-          // res.status(200).json( newChat );
+          
         });
       }
     })
@@ -67,7 +62,6 @@ chatRoutes.get('/chats/:chatID', (req, res, next) => {
 //POST create message
 chatRoutes.post('/chats/:chatID/createMessage', (req, res, next) => {
 
-  console.log(req.body)
   let { senderID, senderName, content } = req.body
   let { chatID } = req.params
 
@@ -84,13 +78,10 @@ chatRoutes.post('/chats/:chatID/createMessage', (req, res, next) => {
       return;
     }
 
-    console.log(msg)
-
     Chat.findByIdAndUpdate(chatID, {
       $push: { messages: msg._id }
     }).
       then(response => {
-        console.log(response)
         res.status(200).json(response);
       })
       .catch(error => console.log(error))
