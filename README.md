@@ -5,7 +5,6 @@
 # Table of contents
 
 - [About](#About)
-- [Why Matched?](#Why-Matched?)
 - [Installation](#Installation)
 - [License](#License)
 - [Footer](#footer)
