@@ -38,8 +38,7 @@ MONGODB_URI = "mongodb://localhost/matched-server"
 FRONTEND_POINT="http://localhost:3000"
 ```
 
-Note: make sue to add the .env file to your gitignore file ;) (NEVER COMMIT IT!)
-Note 2: by default, the front-end will be running on port 3000 and the back-end on port 5000.
+Note: make sue to add the .env file to your gitignore file ;) (NEVER COMMIT IT!). By default, the front-end will be running on port 3000 and the back-end on port 5000.
 
 Then run:
 
