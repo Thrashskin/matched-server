@@ -43,12 +43,6 @@ to get the server running.
 # License
 [(Back to top)](#Table-of-contents)
 
-<!-- Adding the license to README is a good practice so that people can easily refer to it.
-
-Make sure you have added a LICENSE file in your project folder. **Shortcut:** Click add new file in your root of your repo in GitHub > Set file name to LICENSE > GitHub shows LICENSE templates > Choose the one that best suits your project!
-
-I personally add the name of the license and provide a link to it like below. -->
-
 [GNU General Public License version 3](https://opensource.org/licenses/GPL-3.0)
 
 # Credits
